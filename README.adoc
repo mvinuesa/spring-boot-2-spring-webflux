@@ -1,0 +1,69 @@
+:icons: font
+
+= Reactive Spring Boot 2 with Spring WebFlux
+:toc:
+:toclevels: 4
+
+
+[[intro]]
+== Intro
+The purpose of this application is to use Reactive Spring Boot 2 with WebFlux
+
+== Changelog
+Check the link:changelog.adoc[changelog.adoc] for an overview of changes.
+
+== API
+
+The REST api contains the following endpoints:
+
+.*Application service API with annotations API*
+
+|=========================================================
+| |*HTTP Method* |*Path*
+| Endpoint that returns all users | `GET` | `/users`
+| Endpoint that returns user by id | `GET` | `/users/{id}`
+| Endpoint that returns a user event every one second in a stream | `GET` | `/users/{id}/events`
+|=========================================================
+
+.*Application service API with functional API*
+
+|=========================================================
+| |*HTTP Method* |*Path*
+| Endpoint that returns all users | `GET` | `/routeUsers`
+| Endpoint that returns user by id | `GET` | `/routeUsers/{id}`
+| Endpoint that returns a user event every one second in a stream | `GET` | `/routeUsers/{id}/events`
+|=========================================================
+
+
+== Quick Start
+
+=== Build
+
+[source.console.shell]
+----
+mvn clean install
+----
+
+=== Run
+
+[source.console.shell]
+----
+mvn spring-boot:run
+----
+
+=== Test
+
+* How to test a *GET* `/users`
+
+[source.console.shell]
+----
+curl -i -X GET http://localhost:8080/users
+----
+
+* How to test a *GET* `/routeUsers`
+
+[source.console.shell]
+----
+curl -i -X GET http://localhost:8080/routeUsers
+----
+

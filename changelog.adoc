@@ -1,0 +1,9 @@
+:icons: font
+
+= Changelog
+
+== 1.0.0
+Added:
+
+** Reactive Spring Boot 2.0 application with WebFlux
+
