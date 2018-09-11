@@ -16,6 +16,7 @@ import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.ReplayProcessor;
@@ -58,9 +59,9 @@ public class UserWebSocketHandlerIntegrationTests {
                         .then())
                 .block(Duration.ofMillis(3000));
 
-        Collection<Object> events = output.collectList().block(Duration.ofMillis(3000));
-        assertEquals(2, events.size());
-        Object userEventString = ((List<Object>) events).get(0);
+        List<Object> events = output.collectList().block(Duration.ofMillis(3000));
+        assertEquals(2, Objects.requireNonNull(events).size());
+        Object userEventString = events.get(0);
         assertThat(userEventString, hasJsonPath("$.user"));
         assertThat(userEventString, hasJsonPath("$.user.id"));
         assertThat(userEventString, hasJsonPath("$.user.name"));
@@ -69,7 +70,7 @@ public class UserWebSocketHandlerIntegrationTests {
         assertThat(userEventString, hasJsonPath("$.user.name", equalTo("Pepe")));
     }
 
-    protected URI getUrl(String path) throws URISyntaxException {
+    private URI getUrl(String path) throws URISyntaxException {
         return new URI("ws://localhost:" + this.port + path);
     }
 }

@@ -8,7 +8,7 @@
 [[intro]]
 == Intro
 The purpose of this application is to use Reactive Spring Boot 2 with WebFlux.
-There are two reactive APIs, one with annotation programming model and another with fucntional programming model.
+There are two reactive APIs, one with annotation programming model and another with functional programming model.
 In addition there is an example with WebSocket.
 All code has unit or integrated tests.
 
@@ -39,7 +39,7 @@ The REST api contains the following endpoints:
 
 == WebSocket
 
-WebSocket enpint:
+WebSocket endpoint:
 
  ws://localhost:8080/user-event/
 
