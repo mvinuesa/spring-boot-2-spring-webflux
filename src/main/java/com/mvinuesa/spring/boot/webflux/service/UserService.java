@@ -1,5 +1,7 @@
 package com.mvinuesa.spring.boot.webflux.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mvinuesa.spring.boot.webflux.model.User;
 import com.mvinuesa.spring.boot.webflux.model.UserEvent;
 
@@ -26,6 +28,7 @@ import reactor.util.function.Tuple2;
 public class UserService {
 
     private final Collection<User> users;
+    private static final ObjectMapper json = new ObjectMapper();
 
     /**
      * Default constructor
@@ -44,6 +47,27 @@ public class UserService {
 
         Flux<UserEvent> userEventFlux = Flux.fromStream(Stream.generate(() ->
                 new UserEvent(user, new Date(), randomType())));
+
+        return Flux.zip(interval, userEventFlux)
+                .map(Tuple2::getT2);
+    }
+
+    /**
+     * sends a {@link UserEvent} every one second
+     */
+    public Flux<String> textUserEventsFirst() {
+        Flux<Long> interval = Flux.interval(Duration.ofSeconds(1));
+
+        Flux<String> userEventFlux = Flux.fromStream(Stream.generate(() ->
+        {
+            try {
+                return json.writeValueAsString(new UserEvent(users.stream().findFirst()
+                        .orElse(new User("dummyId", "dummy")), new Date(), randomType()));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                return "{\"dummy\"}";
+            }
+        }));
 
         return Flux.zip(interval, userEventFlux)
                 .map(Tuple2::getT2);
@@ -71,7 +95,7 @@ public class UserService {
     }
 
     private String randomType() {
-        String[] types = "new account, delete account, update account".split(",");
+        String[] types = "new account,delete account,update account".split(",");
         return types[new Random().nextInt(types.length)];
     }
 }

@@ -1,12 +1,13 @@
-package com.mvinuesa.spring.boot.webflux;
+package com.mvinuesa.spring.boot.webflux.web;
 
 import com.mvinuesa.spring.boot.webflux.model.User;
 import com.mvinuesa.spring.boot.webflux.model.UserEvent;
 import com.mvinuesa.spring.boot.webflux.service.UserService;
-import com.mvinuesa.spring.boot.webflux.web.UserController;
+import com.mvinuesa.spring.boot.webflux.web.UserRouterConfiguration;
 
 import org.junit.Test;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.server.RouterFunction;
 
 import java.util.Objects;
 
@@ -20,12 +21,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.http.MediaType.TEXT_EVENT_STREAM;
 
 /**
- * This class test {@link UserController}
+ * This class test {@link RouterFunction}
  */
-public class UserControllerTest {
+public class UserRoutesTest {
 
     private final WebTestClient webTestClient = WebTestClient
-            .bindToController(new UserController(new UserService())).build();
+            .bindToRouterFunction(new UserRouterConfiguration().userRoutes(new UserService())).build();
 
     /**
      * This test gets all user
@@ -33,7 +34,7 @@ public class UserControllerTest {
      */
     @Test
     public void getAllUsers() {
-        webTestClient.get().uri("/users").accept(APPLICATION_JSON).exchange()
+        webTestClient.get().uri("/routeUsers").accept(APPLICATION_JSON).exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
                 .expectBodyList(User.class)
@@ -46,7 +47,7 @@ public class UserControllerTest {
      */
     @Test
     public void getAllUsersJson() {
-        webTestClient.get().uri("/users").accept(APPLICATION_JSON).exchange()
+        webTestClient.get().uri("/routeUsers").accept(APPLICATION_JSON).exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
                 .expectBody()
@@ -55,14 +56,13 @@ public class UserControllerTest {
                 .jsonPath("$[2].name").isEqualTo("Ricardo");
     }
 
-
     /**
      * This test get user by id
      * Result OK
      */
     @Test
     public void getUserById() {
-        User user = Objects.requireNonNull(webTestClient.get().uri("/users").accept(APPLICATION_JSON).exchange()
+        User user = Objects.requireNonNull(webTestClient.get().uri("/routeUsers").accept(APPLICATION_JSON).exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
                 .expectBodyList(User.class)
@@ -70,7 +70,7 @@ public class UserControllerTest {
                 .returnResult().getResponseBody()).get(0);
 
 
-        webTestClient.get().uri("/users/" + user.getId()).accept(APPLICATION_JSON).exchange()
+        webTestClient.get().uri("/routeUsers/" + user.getId()).accept(APPLICATION_JSON).exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
                 .expectBody(User.class)
@@ -86,7 +86,7 @@ public class UserControllerTest {
      */
     @Test
     public void getEventsUserById() {
-        User user = Objects.requireNonNull(webTestClient.get().uri("/users").accept(APPLICATION_JSON).exchange()
+        User user = Objects.requireNonNull(webTestClient.get().uri("/routeUsers").accept(APPLICATION_JSON).exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
                 .expectBodyList(User.class)
@@ -95,7 +95,7 @@ public class UserControllerTest {
 
 
         Flux<UserEvent> userEventFlux =  webTestClient.get()
-                .uri("/users/" + user.getId() + "/events")
+                .uri("/routeUsers/" + user.getId() + "/events")
                 .accept(TEXT_EVENT_STREAM).exchange()
                 .expectStatus().isOk()
                 .returnResult(UserEvent.class)
